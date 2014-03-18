@@ -8,53 +8,49 @@ import ImageDraw
 #import math
 import pylab
 
-imgPath = "images/"
-tmpPath = "tmp/"
+class analyse(object):
+	def __init__(self):
+		self.tmpPath = "tmp/"
 
-im = Image.open(imgPath + "IR_0485.jpg")
+	def analyseImage(self, imageFullPath, xStart, yStart, xStop, yStop):
 
-print im.bits, im.size, im.format
+		im = Image.open(imageFullPath)
+		print im.bits, im.size, im.format
 
+		pixelsInt = []
+		pixels = list(im.getdata())
 
-# sample
-'''
-yRow = 155
-xStart = 120
-xStop = 220
-'''
+		for x in range(xStart, xStop):
+			val = pixels[yStart * 240 + x]
+			pixelsInt.append(val)
 
-yStart = 10
-yStop = 220
-xStart = 170
-xStop = 170
+		for y in range(yStart, yStop):
+			val = pixels[xStart + 240 * y]
+			pixelsInt.append(val)
 
-# value bar
-'''
-yRow = 228
-xStart = 55
-xStop = 180
-'''
+		indices = range(1, len(pixelsInt)+1)
+		pylab.plot(indices, pixelsInt)
 
-pixelsInt = []
-pixels = list(im.getdata())
+		my_dpi = 80
+		#pylab.figure(figsize=(600/my_dpi, 500/my_dpi), dpi=my_dpi)
+		pylab.figure(1, figsize=(3.25, 3))
 
-for x in range(xStart, xStop):
-	val = pixels[yStart * 240 + x]
-	pixelsInt.append(val)
-	
-for y in range(yStart, yStop):
-	val = pixels[xStart + 240 * y]
-	pixelsInt.append(val)
+		draw = ImageDraw.Draw(im)
+		draw.line([(xStart, yStart),(xStop, yStop)], fill=128)
+		del draw
 
-indices = range(1, len(pixelsInt)+1)
-pylab.plot(indices, pixelsInt)
+		im.save(self.tmpPath + "line.png", "PNG")
+		#pylab.show()
+		pylab.savefig(self.tmpPath + "graph.png", dpi=my_dpi)
+		pylab.close()
+		#600x500
 
-draw = ImageDraw.Draw(im)
-draw.line([(xStart, yStart),(xStop, yStop)], fill=128)
-del draw 
+if __name__ == "__main__":
+	xStart = 170
+	yStart = 10
 
-im.save(tmpPath + "line.png", "PNG")
-#pylab.show()
-pylab.savefig(tmpPath + "graph.png")
+	xStop = 170
+	yStop = 220
 
-
+	an = analyse()
+	an.analyseImage("images/IR_0485.jpg", xStart, yStart, xStop, yStop)
