@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, os
-import Image
+from PIL import Image
 from PyQt4 import QtCore, QtGui
 from gui.guiMaster import *
 import analyse

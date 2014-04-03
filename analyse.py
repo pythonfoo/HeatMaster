@@ -8,6 +8,25 @@ import ImageDraw
 #import math
 import pylab
 
+def bresenham(x0, y0, x1, y1):
+	"""https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm"""
+	dx = abs(x1-x0)
+	dy = abs(y1-y0)
+	sx = 1 if x0 < x1 else -1
+	sy = 1 if y0 < y1 else -1
+	err = dx-dy
+
+	yield x0,y0
+	while x0 != x1 or y0 != y1:
+		e2 = 2*err
+		if e2 > -dy:
+			err = err - dy
+			x0 = x0 + sx
+		if e2 < dx:
+			err = err + dx
+			y0 = y0 + sy
+		yield x0, y0
+
 class analyse(object):
 	def __init__(self):
 		self.tmpPath = "tmp/"
@@ -17,16 +36,7 @@ class analyse(object):
 		im = Image.open(imageFullPath)
 		print im.bits, im.size, im.format
 
-		pixelsInt = []
-		pixels = list(im.getdata())
-
-		for x in range(xStart, xStop):
-			val = pixels[yStart * 240 + x]
-			pixelsInt.append(val)
-
-		for y in range(yStart, yStop):
-			val = pixels[xStart + 240 * y]
-			pixelsInt.append(val)
+		pixelsInt = [im.getpixel((x,y)) for x,y in bresenham(xStart, yStart, xStop, yStop)]
 
 		indices = range(1, len(pixelsInt)+1)
 		pylab.plot(indices, pixelsInt)
